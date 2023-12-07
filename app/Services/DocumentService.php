@@ -153,7 +153,7 @@ class DocumentService implements DocumentServiceInterface
      */
     private function generateActsByTemplate(array $actDataList, string $saveDir): void
     {
-        $templatePath = storage_path('app/public/' . self::ACT_TEMPLATE_PATH);
+        $templatePath = storage_path('app/' . self::ACT_TEMPLATE_PATH);
         foreach ($actDataList as $actData) {
             $word = new TemplateProcessor($templatePath);
             $word->setValue('title', $actData->getTitle());
@@ -176,7 +176,7 @@ class DocumentService implements DocumentServiceInterface
     {
         $table = '';
 
-        $rowTemplate = Storage::disk('public')->get(self::TABLE_ROW_TEMPLATE_PATH);
+        $rowTemplate = Storage::get(self::TABLE_ROW_TEMPLATE_PATH);
 
         for ($i = 1; $i <= $actTableRowDto->getDayCount(); $i++) {
             $table .= str_replace(
