@@ -8,23 +8,6 @@ use ZipArchive;
 
 class FileHelper
 {
-    static function rmdir($src): void
-    {
-        $dir = opendir($src);
-        while (false !== ($file = readdir($dir))) {
-            if (($file !== '.') && ($file !== '..')) {
-                $full = $src . '/' . $file;
-                if (is_dir($full)) {
-                    self::rmdir($full);
-                } else {
-                    unlink($full);
-                }
-            }
-        }
-        closedir($dir);
-        rmdir($src);
-    }
-
     public static function zip(string $zipDirPath, string $saveZipFilePath): bool
     {
         if (!extension_loaded('zip') || !file_exists($zipDirPath)) {

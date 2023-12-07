@@ -4,9 +4,11 @@ namespace App\Contracts;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-interface DocumentServiceInterface
+interface RzdDocumentServiceInterface
 {
 
     public function generateActs(UploadedFile $tableFile): string;
+
+    public function forgetOldDocuments(): void;
 
 }

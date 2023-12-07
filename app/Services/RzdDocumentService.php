@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Contracts\DocumentServiceInterface;
+use App\Contracts\RzdDocumentServiceInterface;
 use App\Dto\ActDataDto;
 use App\Helpers\FileHelper;
 use Carbon\Carbon;
@@ -12,15 +12,13 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\TemplateProcessor;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class DocumentService implements DocumentServiceInterface
+class RzdDocumentService implements RzdDocumentServiceInterface
 {
 
-    public const ACT_TEMPLATE_PATH = 'template/acts.docx';
-    public const TABLE_ROW_TEMPLATE_PATH = 'template/table_row.xml';
-
+    private const ACT_TEMPLATE_PATH = 'template/acts.docx';
+    private const TABLE_ROW_TEMPLATE_PATH = 'template/table_row.xml';
 
     private const TEMP_DIRECTORY = 'temp';
 
@@ -30,7 +28,7 @@ class DocumentService implements DocumentServiceInterface
      */
     public function generateActs(UploadedFile $tableFile): string
     {
-        $time = now()->getTimestamp();
+        $time = time();
 
         if (!Storage::exists(self::TEMP_DIRECTORY)) {
             Storage::makeDirectory(self::TEMP_DIRECTORY);
@@ -51,9 +49,9 @@ class DocumentService implements DocumentServiceInterface
         if (!Storage::exists($saveDir)) {
             Storage::makeDirectory($saveDir);
         }
-        $saveDir = storage_path('app/' . $saveDir);
+        $saveDirPath = storage_path('app/' . $saveDir);
 
-        $this->generateActsByTemplate($actDataList, $saveDir);
+        $this->generateActsByTemplate($actDataList, $saveDirPath);
 
         $zipArchiveFile = $time . '/' . Str::uuid();
         if (!Storage::disk('public')->exists($zipArchiveFile)) {
@@ -63,8 +61,8 @@ class DocumentService implements DocumentServiceInterface
         $zipArchivePath = storage_path("app/public/$zipArchiveFile/acts.zip");
         $zipArchiveFile .= '/acts.zip';
 
-        FileHelper::zip($saveDir, $zipArchivePath);
-        FileHelper::rmdir($saveDir);
+        FileHelper::zip($saveDirPath, $zipArchivePath);
+        Storage::deleteDirectory($saveDir);
 
         return asset('storage/' . $zipArchiveFile);
     }
@@ -143,7 +141,6 @@ class DocumentService implements DocumentServiceInterface
         return $actDataList;
     }
 
-
     /**
      * @param array<ActDataDto> $actDataList
      * @param string $saveDir
@@ -186,5 +183,20 @@ class DocumentService implements DocumentServiceInterface
             );
         }
         return $table;
+    }
+
+    public function forgetOldDocuments(): void
+    {
+        Storage::deleteDirectory(self::TEMP_DIRECTORY);
+
+        $time = now()->subHour()->getTimestamp();
+
+        $directories = Storage::disk('public')->directories();
+
+        foreach ($directories as $directory) {
+            if ($directory <= $time) {
+                Storage::disk('public')->deleteDirectory($directory);
+            }
+        }
     }
 }

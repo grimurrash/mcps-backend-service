@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\DocumentServiceInterface;
+use App\Contracts\RzdDocumentServiceInterface;
 use App\Http\Requests\GenerateActsRequest;
 use App\Http\Resources\GenerateActsResource;
 use Illuminate\Http\JsonResponse;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class GenerateDocumentController extends Controller
 {
     public function __construct(
-        private readonly DocumentServiceInterface $documentService
+        private readonly RzdDocumentServiceInterface $documentService
     )
     {
     }

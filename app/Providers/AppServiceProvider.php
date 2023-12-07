@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Contracts\DocumentServiceInterface;
-use App\Services\DocumentService;
+use App\Contracts\RzdDocumentServiceInterface;
+use App\Services\RzdDocumentService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(DocumentServiceInterface::class, DocumentService::class);
+        $this->app->bind(RzdDocumentServiceInterface::class, RzdDocumentService::class);
     }
 
     /**
