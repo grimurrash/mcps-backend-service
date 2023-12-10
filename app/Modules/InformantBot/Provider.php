@@ -3,7 +3,7 @@
 namespace App\Modules\InformantBot;
 
 use App\Modules\InformantBot\Contracts\InformantBotWebhookServiceInterface;
-use App\Modules\InformantBot\Service\InformantBotWebhookService;
+use App\Modules\InformantBot\Services\InformantBotWebhookService;
 use Illuminate\Support\ServiceProvider;
 
 class Provider extends ServiceProvider

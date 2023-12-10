@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\InformantBot\Service;
+namespace App\Modules\InformantBot\Services;
 
 use App\Modules\InformantBot\Contracts\InformantBotWebhookServiceInterface;
 use Telegram\Bot\Objects\Update;
