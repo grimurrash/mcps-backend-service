@@ -41,7 +41,7 @@ enum InformantBotStepEnum: int
     case S21 = 31;
     case FINISH = -100;
     case START_FAIL = -1;
-    case REVIEW = 100;
+    case REVIEW = 32;
 
     public function nextStep(): InformantBotStepEnum
     {
