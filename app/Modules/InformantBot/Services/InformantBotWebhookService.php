@@ -166,6 +166,15 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
             return;
         }
 
+        if ($this->informantBotData->step === InformantBotStepEnum::S7_Q) {
+            $message = 'Хорошо, я сейчас тебе всё расскажу';
+            if (str_contains($text, 'биометричес')) {
+                $message = 'Молодец, уважаемый искатель знаний, верно';
+            }
+
+            $this->sendMessage($message, replyMessageId: $messageId);
+        }
+
         if (($this->informantBotData->step === InformantBotStepEnum::S5_Q) && $text !== 'Продолжим') {
             $message = match ($text) {
                 'Да, конечно' => 'Я не сомневался в тебе, уважаемый искатель знаний',
