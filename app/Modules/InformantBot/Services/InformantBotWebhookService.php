@@ -36,7 +36,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $messageId = $update->getMessage()->get('message_id');
 
         if (!$this->informantBotData->step->isCustomMessage() && !in_array($text, self::EXCLUDE_TEXT, true) && !$this->inArrayR($text, $this->informantBotData->step->getInlineButtons())) {
-            $this->sendMessage('Выберите из предложенных вариантов');
+            $this->sendMessage('Выберите из предложенных вариантов', removeButtons: false);
             return;
         }
 
@@ -48,7 +48,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $this->processMessage($text, $messageId);
     }
 
-    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = false): void
+    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = true  ): void
     {
         $params = [];
 
@@ -128,42 +128,39 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
         if ($step->isRightTestAnswer($text)) {
             $this->informantBotData->test_points++;
+            $this->informantBotData->save();
         }
 
-        $step = $step->nextStep();
-        $this->sendMessage($step->getBotMessage(), buttons: $step->getInlineButtons());
-        $this->informantBotData->step = $step;
-        $this->informantBotData->save();
-
+        $this->moveNextStep();
     }
 
     private function processMessage(string $text, string $messageId): void
     {
         if ($this->informantBotData->step === InformantBotStepEnum::START_Q && $text === 'Не очень хочется, но придётся') {
-            $this->sendMessage(InformantBotStepEnum::START_FAIL->getBotMessage(), removeButtons: true);
+            $this->sendMessage(InformantBotStepEnum::START_FAIL->getBotMessage());
             $this->informantBotData->update(['step' => InformantBotStepEnum::START_FAIL]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::START_FAIL) {
-            $this->sendMessage(InformantBotStepEnum::START_FAIL->getReplyBotMessage(), replyMessageId: $messageId, removeButtons: true);
+            $this->sendMessage(InformantBotStepEnum::START_FAIL->getReplyBotMessage(), replyMessageId: $messageId);
             $this->informantBotData->update(['step' => InformantBotStepEnum::FINISH, 'review' => $text]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::REVIEW) {
-            $this->sendMessage(InformantBotStepEnum::REVIEW->getReplyBotMessage(), replyMessageId: $messageId, removeButtons: true);
+            $this->sendMessage(InformantBotStepEnum::REVIEW->getReplyBotMessage(), replyMessageId: $messageId);
             $this->informantBotData->update(['step' => InformantBotStepEnum::FINISH, 'review' => $text]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::S3_Q && $text !== 'все перечисленное верно') {
-            $this->sendMessage('Подумай, я верю, что ты справишься', replyMessageId: $messageId);
+            $this->sendMessage('Подумай, я верю, что ты справишься', replyMessageId: $messageId, removeButtons: false);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::S6_Q && $text !== 'Фамилия, дата рождения, данные о составе семьи, номер свидетельства о рождении') {
-            $this->sendMessage('Попробуй ещё раз, я верю в тебя', replyMessageId: $messageId);
+            $this->sendMessage('Попробуй ещё раз, я верю в тебя', replyMessageId: $messageId, removeButtons: false);
             return;
         }
 
@@ -173,7 +170,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                 $message = 'Молодец, уважаемый искатель знаний, верно';
             }
 
-            $this->sendMessage($message, replyMessageId: $messageId, removeButtons: true);
+            $this->sendMessage($message, replyMessageId: $messageId);
         }
 
         if (($this->informantBotData->step === InformantBotStepEnum::S5_Q) && $text !== 'Продолжим') {
@@ -193,9 +190,14 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $replyBotMessage = $this->informantBotData->step->getReplyBotMessage();
 
         if (!is_null($replyBotMessage)) {
-            $this->sendMessage($replyBotMessage, replyMessageId: $messageId, removeButtons: true);
+            $this->sendMessage($replyBotMessage, replyMessageId: $messageId);
         }
 
+        $this->moveNextStep();
+    }
+
+    private function moveNextStep(): void
+    {
         $step = $this->informantBotData->step;
         while (true) {
             $step = $step->nextStep();
