@@ -91,7 +91,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                 if (in_array($needle, $arrayItem, true)) {
                     return true;
                 }
-            } elseif (str_contains($arrayItem, trim($needle, "\n\r\t\v\0.,"))) {
+            } elseif (str_contains($arrayItem, trim($needle, "\n\r\t\v\0.,…"))) {
                 return true;
             }
         }
