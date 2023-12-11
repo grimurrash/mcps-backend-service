@@ -105,7 +105,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
         if ($step->isManyResultTest()) {
             $answerCache = Cache::get('chat' . $this->informantBotData->chat_id) ?? '';
-            $answers = explode('|', $answerCache);
+            $answers = array_filter(explode('|', $answerCache));
             $answers[] = $text;
             if ($text !== 'Подтвердить выбор') {
                 Cache::set('chat' . $this->informantBotData->chat_id, implode('|', $answers));
@@ -115,9 +115,10 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                     $markup->row([Keyboard::button(['text' => $button])]);
                 }
                 $markup->row([Keyboard::button(['text' => 'Подтвердить выбор'])]);
-                Telegram::editMessageReplyMarkup([
+                Telegram::sendMessage([
                     'chat_id' => $this->informantBotData->chat_id,
-                    'reply_markup' => $markup
+                    'reply_markup' => $markup,
+                    'text' => 'Выбери ещё, или подтверди выбор'
                 ]);
                 return;
             }
