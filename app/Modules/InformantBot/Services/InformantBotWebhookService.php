@@ -15,6 +15,11 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 {
     private InformantBotData $informantBotData;
 
+    private const EXCLUDE_TEXT = [
+        'Продолжим',
+        'Подтвердить выбор'
+    ];
+
     public function handler(Update $update): void
     {
         $informantBotData = InformantBotData::where('chat_id', $update->getChat()->get('id'))->first();
@@ -30,7 +35,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $text = $update->getMessage()->get('text');
         $messageId = $update->getMessage()->get('message_id');
 
-        if (!$this->informantBotData->step->isCustomMessage() && !$this->inArrayR($text, $this->informantBotData->step->getInlineButtons())) {
+        if (!$this->informantBotData->step->isCustomMessage() && !in_array($text, self::EXCLUDE_TEXT, true) && !$this->inArrayR($text, $this->informantBotData->step->getInlineButtons())) {
             $this->sendMessage('Выберите из предложенных вариантов');
             return;
         }
