@@ -48,7 +48,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $this->processMessage($text, $messageId);
     }
 
-    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = []): void
+    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = false): void
     {
         $params = [];
 
@@ -72,7 +72,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                 $markup->row($row);
             }
             $params['reply_markup'] = $markup;
-        } else {
+        } elseif ($removeButtons) {
             $params['reply_markup'] = Keyboard::remove();
         }
 
@@ -139,30 +139,30 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
     private function processMessage(string $text, string $messageId): void
     {
         if ($this->informantBotData->step === InformantBotStepEnum::START_Q && $text === 'Не очень хочется, но придётся') {
-            $this->sendMessage(InformantBotStepEnum::START_FAIL->getBotMessage());
+            $this->sendMessage(InformantBotStepEnum::START_FAIL->getBotMessage(), removeButtons: true);
             $this->informantBotData->update(['step' => InformantBotStepEnum::START_FAIL]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::START_FAIL) {
-            $this->sendMessage(InformantBotStepEnum::START_FAIL->getReplyBotMessage(), replyMessageId: $messageId);
+            $this->sendMessage(InformantBotStepEnum::START_FAIL->getReplyBotMessage(), replyMessageId: $messageId, removeButtons: true);
             $this->informantBotData->update(['step' => InformantBotStepEnum::FINISH, 'review' => $text]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::REVIEW) {
-            $this->sendMessage(InformantBotStepEnum::REVIEW->getReplyBotMessage(), replyMessageId: $messageId);
+            $this->sendMessage(InformantBotStepEnum::REVIEW->getReplyBotMessage(), replyMessageId: $messageId, removeButtons: true);
             $this->informantBotData->update(['step' => InformantBotStepEnum::FINISH, 'review' => $text]);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::S3_Q && $text !== 'все перечисленное верно') {
-            $this->sendMessage('Подумай, я верю, что ты справишься', replyMessageId: $messageId, buttons: $this->informantBotData->step->getInlineButtons());
+            $this->sendMessage('Подумай, я верю, что ты справишься', replyMessageId: $messageId);
             return;
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::S6_Q && $text !== 'Фамилия, дата рождения, данные о составе семьи, номер свидетельства о рождении') {
-            $this->sendMessage('Попробуй ещё раз, я верю в тебя', replyMessageId: $messageId, buttons: $this->informantBotData->step->getInlineButtons());
+            $this->sendMessage('Попробуй ещё раз, я верю в тебя', replyMessageId: $messageId);
             return;
         }
 
@@ -172,7 +172,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                 $message = 'Молодец, уважаемый искатель знаний, верно';
             }
 
-            $this->sendMessage($message, replyMessageId: $messageId);
+            $this->sendMessage($message, replyMessageId: $messageId, removeButtons: true);
         }
 
         if (($this->informantBotData->step === InformantBotStepEnum::S5_Q) && $text !== 'Продолжим') {
@@ -192,7 +192,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $replyBotMessage = $this->informantBotData->step->getReplyBotMessage();
 
         if (!is_null($replyBotMessage)) {
-            $this->sendMessage($replyBotMessage, replyMessageId: $messageId);
+            $this->sendMessage($replyBotMessage, replyMessageId: $messageId, removeButtons: true);
         }
 
         $step = $this->informantBotData->step;
