@@ -35,7 +35,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $text = $update->getMessage()->get('text');
         $messageId = $update->getMessage()->get('message_id');
 
-        if (!$this->informantBotData->step->isCustomMessage() && !in_array($text, self::EXCLUDE_TEXT, true) && !$this->inArrayR($text, $this->informantBotData->step->getInlineButtons())) {
+        if (!$this->informantBotData->step->isCustomMessage() && !empty($this->informantBotData->step->getInlineButtons()) && !in_array($text, self::EXCLUDE_TEXT, true) && !$this->inArrayR($text, $this->informantBotData->step->getInlineButtons())) {
             $this->sendMessage('Выберите из предложенных вариантов', removeButtons: false);
             return;
         }
