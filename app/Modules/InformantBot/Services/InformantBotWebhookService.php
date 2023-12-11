@@ -129,7 +129,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
             $this->informantBotData->test_points++;
         }
 
-        $step->nextStep();
+        $step = $step->nextStep();
         $this->sendMessage($step->getBotMessage(), buttons: $step->getInlineButtons());
         $this->informantBotData->step = $step;
         $this->informantBotData->save();
