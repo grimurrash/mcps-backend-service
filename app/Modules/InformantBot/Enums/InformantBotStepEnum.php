@@ -43,9 +43,9 @@ enum InformantBotStepEnum: int
     case START_FAIL = -1;
     case REVIEW = 32;
 
-    public function nextStep(): InformantBotStepEnum
+    public function nextStep(): InformantBotStepEnum|null
     {
-        return self::from($this->value + 1);
+        return self::tryfrom($this->value + 1);
     }
 
     public function getBotMessage(): string

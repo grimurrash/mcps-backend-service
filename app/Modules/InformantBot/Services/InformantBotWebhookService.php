@@ -201,6 +201,9 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $step = $this->informantBotData->step;
         while (true) {
             $step = $step->nextStep();
+            if (is_null($step)) {
+                return;
+            }
 
             if (is_null($step->getPhoto())) {
                 $this->sendMessage($step->getBotMessage(), buttons: $step->getInlineButtons());
