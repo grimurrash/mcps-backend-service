@@ -11,8 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->string('chat_id')->unique();
             $table->integer('step')->default(0);
-            $table->string('review')->nullable();
             $table->integer('test_points')->nullable();
+            $table->text('review')->nullable();
             $table->timestamps();
         });
     }

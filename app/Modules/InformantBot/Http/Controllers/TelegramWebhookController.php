@@ -13,20 +13,15 @@ class TelegramWebhookController extends Controller
         private readonly InformantBotWebhookServiceInterface $botWebhookService,
     )
     {
-        Telegram::setAccessToken(config('informant_bot.bot_token'));
     }
 
-    public function webhook(Request $request)
+    public function webhook()
     {
-//        $update = Telegram::commandsHandler(true);
-//
-//        $this->botWebhookService->handler($update);
+        Telegram::setDefaultBot('informantBot');
 
-        Telegram::sendMessage([
-            'chat_id' => '332158440',
-            'text' => $request->getContent(),
-            'disable_web_page_preview' => true,
-        ]);
+        $update = Telegram::commandsHandler(true);
+
+        $this->botWebhookService->handler($update);
 
         return response('ok');
     }

@@ -15,6 +15,11 @@ class Handler extends ExceptionHandler
                 'error' => $e->getMessage(),
             ], 422);
         });
+        $this->renderable(function (SuccessException $e) {
+            return response()->json([
+                'status' => true,
+            ]);
+        });
 
         $this->renderable(function (Throwable $e) {
             return response()->json([
