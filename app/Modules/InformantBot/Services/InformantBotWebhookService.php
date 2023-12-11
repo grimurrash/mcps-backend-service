@@ -136,6 +136,10 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
     private function processMessage(string $text, string $messageId): void
     {
+        if ($this->informantBotData->step === InformantBotStepEnum::FINISH) {
+            return;
+        }
+
         if ($this->informantBotData->step === InformantBotStepEnum::START_Q && $text === 'Не очень хочется, но придётся') {
             $this->sendMessage(InformantBotStepEnum::START_FAIL->getBotMessage());
             $this->informantBotData->update(['step' => InformantBotStepEnum::START_FAIL]);
