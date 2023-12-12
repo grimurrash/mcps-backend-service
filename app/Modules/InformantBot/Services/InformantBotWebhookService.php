@@ -183,12 +183,12 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
                 'Нет, но надо' => 'Думаю, что после прохождения курса, ты поймешь важность этих знаний',
                 'Нет, устал от этой информации' => "Тогда, уважаемый искатель знаний, сделай паузу и послушай <a href='https://youtu.be/OT5zz9F7HSY'>музыку</a> и мы продолжим - пауза 3 минуты",
             };
-            $buttons = [];
             if ($text === 'Нет, устал от этой информации') {
                 $buttons = ['Продолжим'];
+                $this->sendMessage($message, replyMessageId: $messageId, buttons: $buttons);
+                return;
             }
-            $this->sendMessage($message, replyMessageId: $messageId, buttons: $buttons);
-            return;
+            $this->sendMessage($message, replyMessageId: $messageId);
         }
 
         $replyBotMessage = $this->informantBotData->step->getReplyBotMessage();
