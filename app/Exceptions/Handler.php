@@ -8,6 +8,15 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    public function report(Throwable $e): void
+    {
+        if ($e instanceof SuccessException) {
+            return;
+        }
+
+        parent::report($e);
+    }
+
     public function register(): void
     {
         $this->renderable(function (ValidationException $e) {

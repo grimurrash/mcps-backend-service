@@ -13,9 +13,4 @@ class SuccessException extends Exception
             'status' => true,
         ]);
     }
-
-    public function report()
-    {
-        return false;
-    }
 }
