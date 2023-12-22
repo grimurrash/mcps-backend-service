@@ -2,10 +2,14 @@
 namespace App\Modules\InformantBot\Telegram\Commands;
 
 use App\Exceptions\SuccessException;
+use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
 use App\Modules\InformantBot\Enums\InformantBotStepEnum;
 use App\Modules\InformantBot\Models\InformantBotData;
+use App\Modules\InformantBot\Services\InformantBotService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Telegram;
 use Telegram\Bot\Commands\Command;
+use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class StartCommand extends Command
@@ -15,6 +19,7 @@ class StartCommand extends Command
 
     /**
      * @throws SuccessException
+     * @throws BindingResolutionException
      */
     public function handle(): void
     {
@@ -24,10 +29,12 @@ class StartCommand extends Command
             'chat_id' => $update->getChat()->get('id')
         ]);
 
-        $this->replyWithMessage([
-            'text' => InformantBotStepEnum::START->getBotMessage(),
+        $this->replyWithPhoto([
+            'photo' => InputFile::create(InformantBotStepEnum::START->getPhoto()),
+            'caption' =>  InformantBotStepEnum::START->getBotMessage(),
             'parse_mode' => 'HTML'
         ]);
+
         $markup = Keyboard::make(['resize_keyboard' => true]);
 
         foreach (InformantBotStepEnum::START_Q->getInlineButtons() as $buttonText) {
@@ -39,7 +46,13 @@ class StartCommand extends Command
             'text' => InformantBotStepEnum::START_Q->getBotMessage(),
             'reply_markup' => $markup
         ]);
-        $informantBot->update(['step' => InformantBotStepEnum::START_Q]);
+        $informantBot->update([
+            'step' => InformantBotStepEnum::START_Q,
+            'review' => null,
+            'test_points' => null
+        ]);
+        $informantBotService = app()->make(InformantBotServiceInterface::class);
+        $informantBotService->saveTable($informantBot);
         throw new SuccessException();
     }
 }

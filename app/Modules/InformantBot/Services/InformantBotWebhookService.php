@@ -2,6 +2,7 @@
 
 namespace App\Modules\InformantBot\Services;
 
+use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
 use App\Modules\InformantBot\Contracts\InformantBotWebhookServiceInterface;
 use App\Modules\InformantBot\Enums\InformantBotStepEnum;
 use App\Modules\InformantBot\Models\InformantBotData;
@@ -14,6 +15,12 @@ use Telegram\Bot\Objects\Update;
 class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 {
     private InformantBotData $informantBotData;
+
+    public function __construct(
+        private readonly InformantBotServiceInterface $informantBotService,
+    )
+    {
+    }
 
     private const EXCLUDE_TEXT = [
         'Продолжим',
@@ -42,13 +49,15 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
         if ($this->informantBotData->step->isTest()) {
             $this->processTest($text);
+            $this->informantBotService->saveTable($this->informantBotData);
             return;
         }
 
         $this->processMessage($text, $messageId);
+        $this->informantBotService->saveTable($this->informantBotData);
     }
 
-    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = true  ): void
+    private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = true): void
     {
         $params = [];
 
@@ -175,6 +184,19 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
             }
 
             $this->sendMessage($message, replyMessageId: $messageId);
+        }
+
+        if ($this->informantBotData->step === InformantBotStepEnum::S21 && $text === 'Да') {
+            $markup = Keyboard::make(['resize_keyboard' => true])->row([
+                Keyboard::inlineButton(['text' => 'Скачать', 'url' => 'https://disk.yandex.ru/i/XCnRlFfTgNDE2w'])
+            ]);
+            Telegram::sendMessage([
+                'chat_id' => $this->informantBotData->chat_id,
+                'text' => 'Нажмите, чтобы cкачать',
+                'parse_mode' => 'HTML',
+                'reply_markup' => $markup,
+                'reply_to_message_id' => $messageId
+            ]);
         }
 
         if (($this->informantBotData->step === InformantBotStepEnum::S5_Q) && $text !== 'Продолжим') {
