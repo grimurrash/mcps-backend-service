@@ -186,7 +186,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
             $this->sendMessage($message, replyMessageId: $messageId);
         }
 
-        if ($this->informantBotData->step === InformantBotStepEnum::S21 && $text === 'Да') {
+        if ($this->informantBotData->step === InformantBotStepEnum::S13_Q && $text === 'Да') {
             $markup = Keyboard::make(['resize_keyboard' => true])->row([
                 Keyboard::inlineButton(['text' => 'Скачать', 'url' => 'https://disk.yandex.ru/i/XCnRlFfTgNDE2w'])
             ]);
