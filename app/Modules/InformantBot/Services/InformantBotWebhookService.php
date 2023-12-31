@@ -143,6 +143,9 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         $this->moveNextStep();
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function processMessage(string $text, string $messageId): void
     {
         if ($this->informantBotData->step === InformantBotStepEnum::FINISH) {
@@ -187,9 +190,15 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         }
 
         if ($this->informantBotData->step === InformantBotStepEnum::S13_Q && $text === 'Да') {
-            $markup = Keyboard::make(['resize_keyboard' => true])->row([
-                Keyboard::inlineButton(['text' => 'Скачать', 'url' => 'https://disk.yandex.ru/i/XCnRlFfTgNDE2w'])
-            ]);
+            $markup = Keyboard::make(['resize_keyboard' => true])
+                ->inline()
+                ->row([
+                    Keyboard::inlineButton([
+                        'text' => 'Скачать',
+                        'url' => 'https://disk.yandex.ru/i/XCnRlFfTgNDE2w'
+                    ])
+                ]);
+
             Telegram::sendMessage([
                 'chat_id' => $this->informantBotData->chat_id,
                 'text' => 'Нажмите, чтобы cкачать',
