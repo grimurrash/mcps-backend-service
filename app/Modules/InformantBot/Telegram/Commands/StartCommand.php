@@ -51,8 +51,6 @@ class StartCommand extends Command
             'review' => null,
             'test_points' => null
         ]);
-        $informantBotService = app()->make(InformantBotServiceInterface::class);
-        $informantBotService->saveTable($informantBot);
         throw new SuccessException();
     }
 }

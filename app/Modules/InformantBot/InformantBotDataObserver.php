@@ -14,9 +14,7 @@ class InformantBotDataObserver
      */
     public function updated(InformantBotData $informantBotData): void
     {
-        if ($informantBotData->step === InformantBotStepEnum::FINISH) {
-            $service = app()->make(InformantBotServiceInterface::class);
-            $service->saveTable($informantBotData);
-        }
+        $service = app()->make(InformantBotServiceInterface::class);
+        $service->saveTable($informantBotData);
     }
 }
