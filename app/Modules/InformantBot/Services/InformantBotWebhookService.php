@@ -196,7 +196,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
             ]);
         }
 
-        if (($this->informantBotData->step === InformantBotStepEnum::S5_Q) && $text !== 'Продолжим') {
+        if ($this->informantBotData->step === InformantBotStepEnum::S5_Q && $text !== 'Продолжим') {
             $message = match ($text) {
                 'Да, конечно' => 'Я не сомневался в тебе, уважаемый искатель знаний',
                 'Нет, но надо' => 'Думаю, что после прохождения курса, ты поймешь важность этих знаний',
