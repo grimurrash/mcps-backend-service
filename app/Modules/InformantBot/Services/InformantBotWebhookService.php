@@ -189,7 +189,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
             Telegram::sendMessage([
                 'chat_id' => $this->informantBotData->chat_id,
-                'text' => 'Нажмите, чтобы cкачать',
+                'text' => 'Нажмите, чтобы cкачать квест-игру «Информационная безопасность и кибергигиена»',
                 'parse_mode' => 'HTML',
                 'reply_markup' => $markup,
                 'reply_to_message_id' => $messageId
