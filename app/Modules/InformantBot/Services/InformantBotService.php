@@ -22,7 +22,7 @@ class InformantBotService implements InformantBotServiceInterface
 
         foreach ($list as $rowIndex => $item) {
             if ($item[0] === $informantBotData->chat_id) {
-                $index = $rowIndex + 1;
+                $index = $rowIndex;
                 break;
             }
         }
