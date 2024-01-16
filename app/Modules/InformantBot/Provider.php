@@ -4,8 +4,6 @@ namespace App\Modules\InformantBot;
 
 use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
 use App\Modules\InformantBot\Contracts\InformantBotWebhookServiceInterface;
-use App\Modules\InformantBot\Models\InformantBotData;
-use App\Modules\InformantBot\Observers\InformantBotDataObserver;
 use App\Modules\InformantBot\Services\InformantBotService;
 use App\Modules\InformantBot\Services\InformantBotWebhookService;
 use Illuminate\Support\ServiceProvider;
@@ -22,7 +20,5 @@ class Provider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
-
-        InformantBotData::observe(InformantBotDataObserver::class);
     }
 }

@@ -5,7 +5,6 @@ use App\Exceptions\SuccessException;
 use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
 use App\Modules\InformantBot\Enums\InformantBotStepEnum;
 use App\Modules\InformantBot\Models\InformantBotData;
-use App\Modules\InformantBot\Services\InformantBotService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Telegram;
 use Telegram\Bot\Commands\Command;
@@ -19,6 +18,7 @@ class StartCommand extends Command
 
     /**
      * @throws SuccessException
+     * @throws BindingResolutionException
      */
     public function handle(): void
     {
@@ -52,6 +52,8 @@ class StartCommand extends Command
             'review' => null,
             'test_points' => null
         ]);
+        $service = app()->make(InformantBotServiceInterface::class);
+        $service->saveTable($informantBot, true);
         throw new SuccessException();
     }
 }

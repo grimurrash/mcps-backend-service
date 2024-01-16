@@ -2,9 +2,11 @@
 
 namespace App\Modules\InformantBot\Services;
 
+use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
 use App\Modules\InformantBot\Contracts\InformantBotWebhookServiceInterface;
 use App\Modules\InformantBot\Enums\InformantBotStepEnum;
 use App\Modules\InformantBot\Models\InformantBotData;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Cache;
 use Telegram\Bot\FileUpload\InputFile;
 use Telegram\Bot\Keyboard\Keyboard;
@@ -14,6 +16,10 @@ use Telegram\Bot\Objects\Update;
 class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 {
     private InformantBotData $informantBotData;
+
+    public function __construct(private readonly InformantBotServiceInterface $informantBotService)
+    {
+    }
 
     private const EXCLUDE_TEXT = [
         'Продолжим',
@@ -42,10 +48,11 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
 
         if ($this->informantBotData->step->isTest()) {
             $this->processTest($text);
-            return;
+        } else {
+            $this->processMessage($text, $messageId);
         }
 
-        $this->processMessage($text, $messageId);
+        $this->informantBotService->saveTable($this->informantBotData);
     }
 
     private function sendMessage(string $text, ?string $replyMessageId = null, array $buttons = [], bool $removeButtons = true): void
