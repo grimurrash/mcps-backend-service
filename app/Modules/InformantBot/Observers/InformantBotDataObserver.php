@@ -25,6 +25,8 @@ class InformantBotDataObserver
     {
         $service = app()->make(InformantBotServiceInterface::class);
         $isForced = in_array($informantBotData->step, [
+            InformantBotStepEnum::START,
+            InformantBotStepEnum::START_Q,
             InformantBotStepEnum::FINISH,
             InformantBotStepEnum::START_FINISH
         ], true);
