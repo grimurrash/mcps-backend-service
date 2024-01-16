@@ -19,7 +19,6 @@ class StartCommand extends Command
 
     /**
      * @throws SuccessException
-     * @throws BindingResolutionException
      */
     public function handle(): void
     {
@@ -27,8 +26,9 @@ class StartCommand extends Command
 
         $informantBot = InformantBotData::query()->createOrFirst([
             'chat_id' => $update->getChat()->get('id')
+        ], [
+            'step' => InformantBotStepEnum::START,
         ]);
-
         $this->replyWithPhoto([
             'photo' => InputFile::create(InformantBotStepEnum::START->getPhoto()),
             'caption' =>  InformantBotStepEnum::START->getBotMessage(),
@@ -46,6 +46,7 @@ class StartCommand extends Command
             'text' => InformantBotStepEnum::START_Q->getBotMessage(),
             'reply_markup' => $markup
         ]);
+
         $informantBot->update([
             'step' => InformantBotStepEnum::START_Q,
             'review' => null,

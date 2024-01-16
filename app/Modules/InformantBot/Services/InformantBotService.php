@@ -31,7 +31,7 @@ class InformantBotService implements InformantBotServiceInterface
 
         Sheets::spreadsheet(self::SPREADSHEET_ID)
             ->sheet('Ответы')
-            ->range('A' . $index )
+            ->range('A' . $index)
             ->update([[
                 $informantBotData->chat_id,
                 $informantBotData->step->getStepName(),
