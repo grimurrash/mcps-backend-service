@@ -12,7 +12,7 @@ class InformantBotService implements InformantBotServiceInterface
 {
     private const SPREADSHEET_ID = '1WuKG7ppSTlpEiRkyhrL5ZXFkqFaOUu9GEox_LcpVn9M';
 
-    public function saveTable(InformantBotData $informantBotData,  bool $isForced): void
+    public function saveTable(InformantBotData $informantBotData,  bool $isForced = true): void
     {
         $list = Sheets::spreadsheet(self::SPREADSHEET_ID)
             ->sheet('Ответы')
