@@ -3,6 +3,7 @@
 namespace App\Modules\InformantBot\Observers;
 
 use App\Modules\InformantBot\Contracts\InformantBotServiceInterface;
+use App\Modules\InformantBot\Enums\InformantBotStepEnum;
 use App\Modules\InformantBot\Models\InformantBotData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -14,7 +15,7 @@ class InformantBotDataObserver
     public function created(InformantBotData $informantBotData): void
     {
         $service = app()->make(InformantBotServiceInterface::class);
-        $service->saveTable($informantBotData);
+        $service->saveTable($informantBotData, true);
     }
 
     /**
@@ -23,6 +24,10 @@ class InformantBotDataObserver
     public function updated(InformantBotData $informantBotData): void
     {
         $service = app()->make(InformantBotServiceInterface::class);
-        $service->saveTable($informantBotData);
+        $isForced = in_array($informantBotData->step, [
+            InformantBotStepEnum::FINISH,
+            InformantBotStepEnum::START_FINISH
+        ], true);
+        $service->saveTable($informantBotData,$isForced);
     }
 }

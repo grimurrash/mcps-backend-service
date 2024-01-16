@@ -12,19 +12,26 @@ class InformantBotService implements InformantBotServiceInterface
 {
     private const SPREADSHEET_ID = '1WuKG7ppSTlpEiRkyhrL5ZXFkqFaOUu9GEox_LcpVn9M';
 
-    public function saveTable(InformantBotData $informantBotData): void
+    public function saveTable(InformantBotData $informantBotData,  bool $isForced): void
     {
         $list = Sheets::spreadsheet(self::SPREADSHEET_ID)
             ->sheet('Ответы')
             ->all();
 
-        $index = count($list);
+        $index = null;
 
         foreach ($list as $rowIndex => $item) {
             if ($item[0] === $informantBotData->chat_id) {
                 $index = $rowIndex;
                 break;
             }
+        }
+
+        if (is_null($index)) {
+            if (!$isForced) {
+                return;
+            }
+            $index = count($list);
         }
 
         ++$index;

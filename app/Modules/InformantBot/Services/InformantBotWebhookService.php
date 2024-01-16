@@ -127,8 +127,7 @@ class InformantBotWebhookService implements InformantBotWebhookServiceInterface
         }
 
         if ($step->isRightTestAnswer($text)) {
-            $this->informantBotData->test_points++;
-            $this->informantBotData->save();
+            $this->informantBotData->update(['test_points' => $this->informantBotData->test_points + 1]);
         }
 
         $this->moveNextStep();
